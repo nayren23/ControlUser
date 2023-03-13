@@ -177,23 +177,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private Bitmap readImage(String nomFichier) {
-        Bitmap bitmap = null;
-        try {
-            // Open stream to read file.
-            FileInputStream in = new FileInputStream(this.getFilesDir()+"/"+nomFichier);
 
-            // Decode file input stream into a bitmap.
-            bitmap = BitmapFactory.decodeStream(in);
-
-            // Close the input stream.
-            in.close();
-
-        } catch (Exception e) {
-            Toast.makeText(this,"Error Impossible c'est une nouvelle instance de l'app:"+ e.getMessage(),Toast.LENGTH_SHORT).show();
-        }
-        return bitmap;
-    }
 
     private void captureImage() {
         // Create an implicit intent, for image capture.
