@@ -10,6 +10,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import modele.User;
+
 //Il n'y a qu'une seule bdd dans le téléphone, les new sont la pour instancier la connexion à cette BDD
 public class DatabaseUser extends SQLiteOpenHelper {
 
@@ -30,7 +32,6 @@ public class DatabaseUser extends SQLiteOpenHelper {
     private static final String COLUMN_USER_PRENOM ="User_prenom";
     private static final String COLUMN_USER_ADRESSE ="User_adresse";
     private static final String COLUMN_USER_NUMERO_TELEPHONE ="User_numeroTelephone";
-
     private static final String COLUMN_USER_PHOTO_PROFIL ="User_photoDeProfil";
 
     public DatabaseUser(Context context)  {
@@ -70,22 +71,25 @@ public class DatabaseUser extends SQLiteOpenHelper {
     public void createDefaultUsersIfNeed()  {
         int count = this.getUserCount();
         if(count ==0 ) {
-            User user1 = new User("User1" , 2);
-            User user2 = new User("User2" , 0);
+            User user1 = new User(0 , "Admin","adminApp", "2 rue de l'admin", "0781799878");
+            User user2 = new User(1 , "AdminPremium","adminAppPremium", "10 rue de l'admin", "0911223344");
         }
     }
 
     //On ajoute un User
     public void addUser(User user) {
-        Log.i(TAG, "MyDatabaseHelper.addUser ... " + user.getFirstName()); // affiche un message dans la console android
+        Log.i(TAG, "MyDatabaseHelper.addUser ... " + user.getNom()); // affiche un message dans la console android
 
         SQLiteDatabase db = this.getWritableDatabase();//ouvre une connexion à la base de données en mode écriture
 
         ContentValues values = new ContentValues(); //stocker des paires clé-valeur de données à insérer ou mettre à jour dans une base de données SQLite
 
         //on prepare les donnees suivantes
-        values.put(COLUMN_USER_NOM, user.getFirstName());
-        values.put(COLUMN_USER_ScoreJoueur, user.getScoreJoueur());
+        values.put(COLUMN_USER_NOM, user.getNom());
+        values.put(COLUMN_USER_PRENOM, user.getPrenom());
+        values.put(COLUMN_USER_ADRESSE, user.getAdresse());
+        values.put(COLUMN_USER_NUMERO_TELEPHONE, user.getNumeroTelephone());
+        values.put(COLUMN_USER_PHOTO_PROFIL, user.getPhotoDeProfil());
 
         // Inserting Row
         db.insert(TABLE_USER, null, values);
@@ -100,12 +104,12 @@ public class DatabaseUser extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_USER, new String[] { COLUMN_USER_ID,
-                        COLUMN_USER_NOM, COLUMN_USER_ScoreJoueur }, COLUMN_USER_ID + "=?",
+                        COLUMN_USER_NOM,COLUMN_USER_PRENOM, COLUMN_USER_ADRESSE,COLUMN_USER_NUMERO_TELEPHONE,COLUMN_USER_PHOTO_PROFIL }, COLUMN_USER_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
-        User user = new User(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Integer.parseInt(cursor.getString(2)));
+        User user = new User(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
         // return User
         return user;
     }
@@ -125,8 +129,12 @@ public class DatabaseUser extends SQLiteOpenHelper {
             do {
                 User user = new User();
                 user.setUserId(Integer.parseInt(cursor.getString(0)));
-                user.setFirstName(cursor.getString(1));
-                user.setScoreJoueur(Integer.parseInt(cursor.getString(2)));
+                user.setNom((cursor.getString(1)));
+                user.setPrenom((cursor.getString(2)));
+                user.setAdresse((cursor.getString(3)));
+                user.setNumeroTelephone((cursor.getString(4)));
+                user.setPhotoDeProfil((cursor.getString(5)));
+
                 // Adding user to list
                 userList.add(user);
             } while (cursor.moveToNext());
@@ -152,13 +160,16 @@ public class DatabaseUser extends SQLiteOpenHelper {
     }
 
     public int updateUser(User user) {
-        Log.i(TAG, "MyDatabaseHelper.updateUser ... "  + user.getFirstName());
+        Log.i(TAG, "MyDatabaseHelper.updateUser ... "  + user.getPrenom());
 
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(COLUMN_USER_NOM, user.getFirstName());
-        values.put(COLUMN_USER_ScoreJoueur, user.getScoreJoueur());
+        values.put(COLUMN_USER_NOM, user.getNom());
+        values.put(COLUMN_USER_PRENOM, user.getPrenom());
+        values.put(COLUMN_USER_ADRESSE, user.getAdresse());
+        values.put(COLUMN_USER_NUMERO_TELEPHONE, user.getNumeroTelephone());
+        values.put(COLUMN_USER_PHOTO_PROFIL, user.getPhotoDeProfil());
 
         // updating row
         return db.update(TABLE_USER, values, COLUMN_USER_ID + " = ?",
@@ -166,7 +177,7 @@ public class DatabaseUser extends SQLiteOpenHelper {
     }
 
     public void deleteUser(User user) {
-        Log.i(TAG, "MyDatabaseHelper.updateUser ... " + user.getFirstName());
+        Log.i(TAG, "MyDatabaseHelper.updateUser ... " + user.getNom());
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_USER, COLUMN_USER_ID + " = ?",

@@ -79,16 +79,11 @@ public class MainActivity extends AppCompatActivity {
 
         this.mSauvegarde_compte.setEnabled(false);
 
-        mUser = new User();
         //On crer la BDD user
         DatabaseUser dbUser = new DatabaseUser(this);
         dbUser.createDefaultUsersIfNeed();
-        dbUser.addUser(mUser);
-        //List<User> userList = dbUser.getAllUser();
 
-        //Notification
-        this.editTextTitle = (EditText) this.findViewById(R.id.editText_title);
-        this.editTextMessage = (EditText) this.findViewById(R.id.editText_message);
+        //List<User> userList = dbUser.getAllUser();
 
 
         /**
@@ -158,6 +153,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void enregistrementUser(User user){
+        DatabaseUser dbUser = new DatabaseUser(this);
+        dbUser.addUser(user);
+    }
 
 
     private void captureImage() {

@@ -12,13 +12,13 @@ public class User implements Serializable {
     private String prenom;
     private String adresse;
     private String numeroTelephone;
-    private Bitmap photoDeProfil;
+    private String photoDeProfil;
 
     public User() {
         this.UserId++;
     }
 
-    public User(int userId, String nom, String prenom, String adresse, String numeroTelephone, Bitmap photoDeProfil) {
+    public User(int userId, String nom, String prenom, String adresse, String numeroTelephone, String photoDeProfil) {
         UserId = userId;
         this.nom = nom;
         this.prenom = prenom;
@@ -27,7 +27,14 @@ public class User implements Serializable {
         this.photoDeProfil = photoDeProfil;
     }
 
-    public User(String nom, String prenom, String adresse, String numeroTelephone, Bitmap photoDeProfil) {
+    public User(int userId, String nom, String prenom, String adresse, String numeroTelephone) {
+        UserId = userId;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.adresse = adresse;
+        this.numeroTelephone = numeroTelephone;
+    }
+    public User(String nom, String prenom, String adresse, String numeroTelephone, String photoDeProfil) {
         this.nom = nom;
         this.prenom = prenom;
         this.adresse = adresse;
@@ -75,11 +82,23 @@ public class User implements Serializable {
         this.numeroTelephone = numeroTelephone;
     }
 
-    public Bitmap getPhotoDeProfil() {
+    public String getPhotoDeProfil() {
         return photoDeProfil;
     }
 
-    public void setPhotoDeProfil(Bitmap photoDeProfil) {
+    public void setPhotoDeProfil(String photoDeProfil) {
         this.photoDeProfil = photoDeProfil;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "UserId=" + UserId +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", adresse='" + adresse + '\'' +
+                ", numeroTelephone='" + numeroTelephone + '\'' +
+                ", photoDeProfil=" + photoDeProfil +
+                '}';
     }
 }
