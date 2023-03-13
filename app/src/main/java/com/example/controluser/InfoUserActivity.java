@@ -9,5 +9,6 @@ public class InfoUserActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View view) {
 
+
     }
 }

@@ -55,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_ID_IMAGE_CAPTURE = 100;
 
+    private static final int REQUEST_CODE_VISUALISATION_USER = 42;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     enregistrementUser(creationUser);
-
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -111,14 +114,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Cliqur pour verifier si tous les champ sont bien remplit
         this.mButtonImage.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 captureImage();
             }
         });
-
-        //
 
         EditText[] editTexts = {mMain_champ_nom, mMain_champ_prenom, mMain_champ_adresse,mMain_champ_numero_telephone}; // Ajoutez tous vos EditText ici
 
@@ -147,6 +149,14 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        //Changement d'activité pour voir tous les utilisateurs
+        mVisualisation_users.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // The user just clicked
+                startActivityForResult(new Intent(MainActivity.this, VisualisationUserActivity.class), REQUEST_CODE_VISUALISATION_USER);
+            }
+        });
     }
 
     private void enregistrementUser(User user) throws IOException {
