@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,6 +17,8 @@ import modele.User;
 public class VisualisationUserActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ListView listUser;
+    private TextView nombreUser;
+
 
 
     @Override
@@ -23,8 +26,12 @@ public class VisualisationUserActivity extends AppCompatActivity implements View
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visualisation_user);
 
-        this.listUser = findViewById(R.id.listeUser);
         DatabaseUser dbUser = new DatabaseUser(this);
+
+        this.nombreUser = findViewById(R.id.nombreUser);
+        this.listUser = findViewById(R.id.listeUser);
+
+        this.nombreUser.setText("Nombre d'Useurs: " + dbUser.getUserCount() );
 
 
         List<User> userList = dbUser.getAllUser();
