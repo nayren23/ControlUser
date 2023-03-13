@@ -40,6 +40,7 @@ public class User implements Serializable {
         this.adresse = adresse;
         this.numeroTelephone = numeroTelephone;
         this.photoDeProfil = photoDeProfil;
+        this.UserId++;
     }
 
     public int getUserId() {

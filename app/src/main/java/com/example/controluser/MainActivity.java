@@ -16,6 +16,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +26,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import BDD.DatabaseUser;
 import modele.User;
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     //préfixer les attributs avec la lettre m (pour member en anglais)
     //les variables statiques sont préfixées par la lettre s.
 
+    //Edit Text
     private EditText mMain_champ_nom;
     private EditText mMain_champ_prenom;
     private EditText mMain_champ_adresse;
@@ -41,18 +46,14 @@ public class MainActivity extends AppCompatActivity {
 
     private Button mButtonImage;
     private ImageView imageView;
-
     private Button mSauvegarde_compte;
     private Button mVisualisation_users;
 
+    private boolean allFilled = true;// pour verifier si tous les champs sont remplit
 
     private User mUser;
 
     private static final int REQUEST_ID_IMAGE_CAPTURE = 100;
-    private static final int REQUEST_CODE_VISUALISATION_ACTIVITY = 42;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
         this.imageView = (ImageView) this.findViewById(R.id.imageView);
         this.mSauvegarde_compte = this.findViewById(R.id.sauvegarde_compte);
         this.mVisualisation_users = this.findViewById(R.id.visualisation_users);
-
         this.mSauvegarde_compte.setEnabled(false);
+        this.mButtonImage.setEnabled(false);
 
         //On crer la BDD user
         DatabaseUser dbUser = new DatabaseUser(this);
@@ -85,79 +86,104 @@ public class MainActivity extends AppCompatActivity {
 
         //List<User> userList = dbUser.getAllUser();
 
-
-        /**
-         * il faut pouvoir être notifié lorsque l'utilisateur commence à saisir du texte
-         * dans le champ EditText correspondant
-         */
-        mNameEditText.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                i = 0;
-                i1 = 0;
-                i2 = 0;
-            }
-
-            /**
-             * This is where we'll check the user input
-             * La méthode à utiliser pour détecter un changement de texte dans une EditText
-             * est afterTextChanged().
-             */
-            @Override
-            public void afterTextChanged(Editable s) {
-                mPlayButton.setEnabled(!s.toString().isEmpty());
-            }
-        });
-
-
         /**
          * Pour détecter que l'utilisateur a cliqué sur le bouton, il est nécessaire
          * d'implémenter un View.OnClickListener
          */
-        mPlayButton.setOnClickListener(new View.OnClickListener() {
+        mSauvegarde_compte.setOnClickListener(new Button.OnClickListener() { // ou view
             @Override
             public void onClick(View v) {
-                mUser.setFirstName(mNameEditText.getText().toString()); //On change le prénom du joueur
-                dbUser.updateUser(mUser);
+                String nom = mMain_champ_nom.getText().toString();
+                String prenom = mMain_champ_prenom.getText().toString();
+                String adresse =  mMain_champ_adresse.getText().toString();
+                String numeroTelephone =mMain_champ_numero_telephone.getText().toString() ;
+                String photoDeProfil = mMain_champ_nom.getText().toString()+ mMain_champ_prenom.getText().toString() ;
 
-                // The user just clicked
-                getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
-                        .edit()
-                        .putString(SHARED_PREF_USER_INFO_NAME, mNameEditText.getText().toString())
-                        .apply();
-                startActivityForResult(new Intent(MainActivity.this, GameActivity.class), REQUEST_CODE_GAME_ACTIVITY);
+                User creationUser = new User(nom,prenom,adresse,numeroTelephone,photoDeProfil);
+
+                try {
+                    enregistrementUser(creationUser);
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
         });
-        greetUser();//pour que meme si on ferme l'app on garde en cache les infos de l'useur
 
-
-
-        this.buttonImage.setOnClickListener(new Button.OnClickListener() {
+        this.mButtonImage.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 captureImage();
             }
         });
-        //save fichier
-        this.saveButton.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveData();
-            }
-        });
+
+        //
+
+        EditText[] editTexts = {mMain_champ_nom, mMain_champ_prenom, mMain_champ_adresse,mMain_champ_numero_telephone}; // Ajoutez tous vos EditText ici
+
+        for (EditText editText : editTexts) {
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    allFilled = true;
+                    for (EditText editText : editTexts) {
+                        String value = editText.getText().toString().trim();
+                        if (TextUtils.isEmpty(value)) {
+                            allFilled = false;
+                        }
+                    }
+                    if(allFilled){
+                        mButtonImage.setEnabled(!s.toString().isEmpty());
+                    }
+                }
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            });
+        }
 
     }
 
-    private void enregistrementUser(User user){
+    private void enregistrementUser(User user) throws IOException {
         DatabaseUser dbUser = new DatabaseUser(this);
         dbUser.addUser(user);
+        Toast.makeText(this, "User Sauvegarder avec Succées 😍!", Toast.LENGTH_SHORT).show();
     }
 
+    private void saveImage(Bitmap bp, String nomFichier){
+        try  { // use the absolute file path here
+            FileOutputStream out = this.openFileOutput(nomFichier, MODE_PRIVATE);
+            bp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+            out.close();
+            Toast.makeText(this,"Image Sauvegarder !",Toast.LENGTH_SHORT).show();
+            // PNG is a lossless format, the compression factor (100) is ignored
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Bitmap readImage(String nomFichier) {
+        Bitmap bitmap = null;
+        try {
+            // Open stream to read file.
+            FileInputStream in = new FileInputStream(this.getFilesDir()+"/"+nomFichier);
+
+            // Decode file input stream into a bitmap.
+            bitmap = BitmapFactory.decodeStream(in);
+
+            // Close the input stream.
+            in.close();
+
+        } catch (Exception e) {
+            Toast.makeText(this,"Error Impossible c'est une nouvelle instance de l'app:"+ e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+        return bitmap;
+    }
 
     private void captureImage() {
         // Create an implicit intent, for image capture.
@@ -166,55 +192,20 @@ public class MainActivity extends AppCompatActivity {
         this.startActivityForResult(intent, REQUEST_ID_IMAGE_CAPTURE);
     }
 
-
-/*
-    @SuppressLint("StringFormatInvalid")
-    private void greetUser() {
-        //Avec les getSharedPreferences
-        // String firstName = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getString(SHARED_PREF_USER_INFO_NAME, null);
-        // int score = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_SCORE, -1); // -1 pour verifier si la case n'est pas null
-
-        //Avec recuperation des infis de la BDD
-        DatabaseUser dbUser = new DatabaseUser(this);
-        User userBDD =  dbUser.getUser(this.mUser.getUserId());
-        String firstName = userBDD.getFirstName();
-        int score = userBDD.getScoreJoueur();
-
-        if (firstName != null) {
-            if (score != -1) {
-                readData();
-                mGreetingTextView.setText(getString(R.string.welcome_back_with_score) +" "+ firstName + " " + score);
-                readImage();
-            } else {
-                mGreetingTextView.setText(getString(R.string.welcome_back) + " " + firstName);
-            }
-            mNameEditText.setText(firstName);
-        }
-    }
-    */
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (REQUEST_CODE_GAME_ACTIVITY == requestCode && RESULT_OK == resultCode) {
-            // Fetch the score from the Intent
-            int score = data.getIntExtra(GameActivity.BUNDLE_EXTRA_SCORE, 0);
-
-            //on change la valeur dans les shared preferences
-            getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
-                    .edit()
-                    .putInt(SHARED_PREF_USER_INFO_SCORE, score)
-                    .apply();
-            greetUser();
-        }
-
         //Camera
         if (requestCode == REQUEST_ID_IMAGE_CAPTURE) {
             if (resultCode == RESULT_OK) {
                 Bitmap bp = (Bitmap) data.getExtras().get("data");
                 this.imageView.setImageBitmap(bp);
-                String nomFichier =  saveData();
-                saveImage(bp,nomFichier);
+
+                //Image sauvegarder dans le fichier
+                String nomFichierPhotoDeProfil = mMain_champ_nom.getText().toString()+ mMain_champ_prenom.getText().toString() ;
+                saveImage(bp,nomFichierPhotoDeProfil);
+                mSauvegarde_compte.setEnabled(true);
+
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "Action canceled", Toast.LENGTH_LONG).show();
             } else {
@@ -222,5 +213,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 }
