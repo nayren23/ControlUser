@@ -2,17 +2,9 @@ package com.example.controluser;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import android.app.Notification;
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Notification;
+
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -22,11 +14,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -35,44 +25,25 @@ import modele.User;
 
 public class MainActivity extends AppCompatActivity {
 
-    //préfixer les attributs avec la lettre m (pour member en anglais)
-    //les variables statiques sont préfixées par la lettre s.
-
     //Edit Text
     private EditText mMain_champ_nom;
     private EditText mMain_champ_prenom;
     private EditText mMain_champ_adresse;
     private EditText mMain_champ_numero_telephone;
-
     private Button mButtonImage;
     private ImageView imageView;
     private Button mSauvegarde_compte;
     private Button mVisualisation_users;
-
-    private boolean allFilled = true;// pour verifier si tous les champs sont remplit
-
-    private User mUser;
-
+    private boolean tousremplis = true;// pour verifier si tous les champs sont remplit
     private static final int REQUEST_ID_IMAGE_CAPTURE = 100;
-
     private static final int REQUEST_CODE_VISUALISATION_USER = 42;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);//permet de déterminer quel fichier layout utiliser. R.layout.nom_du_fichier (sans l'extension XML)
-        /**
-         * On ne peut utiliser la méthode findViewById() qu’après avoir utilisé la
-         * méthode setContentView().
-         *
-         * Pour obtenir les Widgets dans l’Activity, la méthode à appeler
-         * est findViewById().
-         *
-         * Un Widget doit avoir un attribut id dans le layout pour être référençable dans
-         * l’Activity.
-         */
+
+        //Obtention  les Widgets
         this.mMain_champ_nom = findViewById(R.id.main_champ_nom);
         this.mMain_champ_prenom = findViewById(R.id.main_champ_prenom);
         this.mMain_champ_adresse = findViewById(R.id.main_champ_adresse);
@@ -81,14 +52,14 @@ public class MainActivity extends AppCompatActivity {
         this.imageView = (ImageView) this.findViewById(R.id.imageView);
         this.mSauvegarde_compte = this.findViewById(R.id.sauvegarde_compte);
         this.mVisualisation_users = this.findViewById(R.id.visualisation_users);
+
+        //Set bouton
         this.mSauvegarde_compte.setEnabled(false);
         this.mButtonImage.setEnabled(false);
 
         //On crer la BDD user
         DatabaseUser dbUser = new DatabaseUser(this);
         dbUser.createDefaultUsersIfNeed();
-
-        //List<User> userList = dbUser.getAllUser();
 
         /**
          * Pour détecter que l'utilisateur a cliqué sur le bouton, il est nécessaire
@@ -97,24 +68,25 @@ public class MainActivity extends AppCompatActivity {
         mSauvegarde_compte.setOnClickListener(new Button.OnClickListener() { // ou view
             @Override
             public void onClick(View v) {
+                //On récupere les infos saisit par l'utilisateur
                 String nom = mMain_champ_nom.getText().toString();
                 String prenom = mMain_champ_prenom.getText().toString();
                 String adresse =  mMain_champ_adresse.getText().toString();
                 String numeroTelephone =mMain_champ_numero_telephone.getText().toString() ;
                 String photoDeProfil = mMain_champ_nom.getText().toString()+ mMain_champ_prenom.getText().toString() ;
 
+                //On creer notre Utilisateur
                 User creationUser = new User(nom,prenom,adresse,numeroTelephone,photoDeProfil);
-
                 try {
+                    //On creer l'utilisateur dans la BDD
                     enregistrementUser(creationUser);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-
             }
         });
 
-        //Cliqur pour verifier si tous les champ sont bien remplit
+        //Listener pour le bouton de la photo
         this.mButtonImage.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,8 +94,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //On verifie si tous les champs sont remplit pour qu'on puisse appuer sur le bouton save
         EditText[] editTexts = {mMain_champ_nom, mMain_champ_prenom, mMain_champ_adresse,mMain_champ_numero_telephone}; // Ajoutez tous vos EditText ici
-
         for (EditText editText : editTexts) {
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -132,14 +104,14 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    allFilled = true;
+                    tousremplis = true;
                     for (EditText editText : editTexts) {
                         String value = editText.getText().toString().trim();
                         if (TextUtils.isEmpty(value)) {
-                            allFilled = false;
+                            tousremplis = false;
                         }
                     }
-                    if(allFilled){
+                    if(tousremplis){
                         mButtonImage.setEnabled(!s.toString().isEmpty());
                     }
                 }
@@ -162,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     private void enregistrementUser(User user) throws IOException {
         DatabaseUser dbUser = new DatabaseUser(this);
         dbUser.addUser(user);
-        Toast.makeText(this, "User Sauvegarder avec Succées 😍!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Utilisateurs Sauvegarder avec Succées 😍!", Toast.LENGTH_SHORT).show();
     }
 
     private void saveImage(Bitmap bp, String nomFichier){
@@ -173,11 +145,10 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this,"Image Sauvegarder !",Toast.LENGTH_SHORT).show();
             // PNG is a lossless format, the compression factor (100) is ignored
         } catch (IOException e) {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
-
-
 
     private void captureImage() {
         // Create an implicit intent, for image capture.

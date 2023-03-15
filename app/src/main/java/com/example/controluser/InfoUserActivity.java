@@ -22,14 +22,13 @@ import java.util.List;
 import BDD.DatabaseUser;
 import modele.User;
 
-public class InfoUserActivity extends AppCompatActivity implements View.OnClickListener {
+public class InfoUserActivity extends AppCompatActivity {
 
     private ImageView imageViewUser;
     private TextView nomUser;
     private TextView prenomUser;
     private TextView adresseUser;
     private TextView numTelephone;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,39 +38,29 @@ public class InfoUserActivity extends AppCompatActivity implements View.OnClickL
         DatabaseUser dbUser = new DatabaseUser(this);
 
         Intent intent = getIntent();
-        String message = intent.getStringExtra("MESSAGE");
-        System.out.println("affichahe vallll"+ message.charAt(0));
+        String message = intent.getStringExtra("idUser");
 
+        //Obtention  les Widgets
         this.imageViewUser = findViewById(R.id.imageViewUser);
         this.nomUser = findViewById(R.id.nomUser);
         this.prenomUser = findViewById(R.id.prenomUser);
         this.adresseUser = findViewById(R.id.adresseUser);
         this.numTelephone = findViewById(R.id.numTelephone);
 
-
-
         int id = Character.getNumericValue(message.charAt(0));
-        System.out.println("affichage super id user " + id);
-
         User user = dbUser.getUser(id);
 
         String cheminImage = user.getNom()+user.getPrenom();
-        System.out.println("chemin Image "  + cheminImage );
-
         Bitmap imageUser = readImage(cheminImage);
 
+        //On set les champs
         this.imageViewUser.setImageBitmap(imageUser);
         this.nomUser.setText("Nom Utilisateur : " +user.getNom());
         this.prenomUser.setText("Prenom Utilisateur : " + user.getPrenom());
         this.adresseUser.setText("Adresse Utilisateur : " + user.getAdresse());
         this.numTelephone.setText("Numero Telephone Utilisateur : " + user.getNumeroTelephone());
-
     }
-    @Override
-    public void onClick(View view) {
 
-
-    }
     private Bitmap readImage(String nomFichier) {
         Bitmap bitmap = null;
         try {

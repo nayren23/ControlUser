@@ -18,12 +18,10 @@ import java.util.List;
 import BDD.DatabaseUser;
 import modele.User;
 
-public class VisualisationUserActivity extends AppCompatActivity implements View.OnClickListener {
+public class VisualisationUserActivity extends AppCompatActivity  {
 
     private ListView listUser;
     private TextView nombreUser;
-
-    private static final int REQUEST_CODE_INFO_USER_ACTIVITY = 23;
 
 
     @Override
@@ -33,59 +31,33 @@ public class VisualisationUserActivity extends AppCompatActivity implements View
 
         DatabaseUser dbUser = new DatabaseUser(this);
 
+        //Obtention  les Widgets
         this.nombreUser = findViewById(R.id.nombreUser);
         this.listUser = findViewById(R.id.listeUser);
 
         this.nombreUser.setText("Nombre d'Useurs: " + dbUser.getUserCount() );
 
-
         List<User> userList = dbUser.getAllUser();
 
-        List<String> listeNom = new ArrayList<String>();
+        List<String> listeNomPrenom = new ArrayList<String>();
 
         for (User u: userList){
-            listeNom.add(u.getUserId() +"Nom : " + u.getNom()+  "   Prénom: " +  u.getPrenom());
+            listeNomPrenom.add(u.getUserId() +"Nom : " + u.getNom()+  "   Prénom: " +  u.getPrenom());
         }
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1 , listeNomPrenom);
+        listUser.setAdapter(arrayAdapter);
 
         // ListView Item Click Listener (Lorsque l'on clique sur la liste)
         listUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String idListView = (String) listUser.getItemAtPosition(position);
+                String idUser = (String) listUser.getItemAtPosition(position);
 
-                System.out.println("Id de List VIwev"  +  idListView);
-                System.out.println("ChartAt 0"  +  idListView.charAt(0));
-
-                String idUser = idListView;
-
-                String tets = "fbezhf" ;
-                String message = "Bonjour de la première activité";
                 Intent intent = new Intent(VisualisationUserActivity.this, InfoUserActivity.class);
-                intent.putExtra("MESSAGE", idUser);
-
-
+                intent.putExtra("idUser", idUser);
                 startActivity(intent);
-
-
-
-/*
-                Intent i1 = new Intent( VisualisationUserActivity.this, InfoUserActivity.class );
-                i1.putExtra(EXTRA_MESSAGE, idUser );
-                startActivityForResult(i1, REQUEST_CODE_INFO_USER_ACTIVITY);*/
-
-               // startActivityForResult(new Intent(VisualisationUserActivity.this, InfoUserActivity.class), REQUEST_CODE_INFO_USER_ACTIVITY);
-
             }
         });
-
-
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1 , listeNom);
-
-        listUser.setAdapter(arrayAdapter);
-    }
-
-    @Override
-    public void onClick(View view) {
-
     }
 }

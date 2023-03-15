@@ -54,11 +54,10 @@ public class DatabaseUser extends SQLiteOpenHelper {
         db.execSQL(script);
     }
 
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
         Log.i(TAG, "MyDatabaseHelper.onUpgrade ... ");
+
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
 
@@ -110,7 +109,6 @@ public class DatabaseUser extends SQLiteOpenHelper {
             cursor.moveToFirst();
 
         User user = new User(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
-        // return User
         return user;
     }
 
@@ -118,6 +116,7 @@ public class DatabaseUser extends SQLiteOpenHelper {
         Log.i(TAG, "MyDatabaseHelper.getAllUsers ... " );
 
         List<User> userList = new ArrayList<User>();
+
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_USER;
 
@@ -139,8 +138,6 @@ public class DatabaseUser extends SQLiteOpenHelper {
                 userList.add(user);
             } while (cursor.moveToNext());
         }
-
-        // return user list
         return userList;
     }
 
@@ -155,7 +152,6 @@ public class DatabaseUser extends SQLiteOpenHelper {
 
         cursor.close();
 
-        // return count
         return count;
     }
 
@@ -185,4 +181,3 @@ public class DatabaseUser extends SQLiteOpenHelper {
         db.close();
     }
 }
-
