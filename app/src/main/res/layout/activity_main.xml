@@ -13,10 +13,24 @@
         android:id="@+id/main_textview_greeting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bienvenue! Saisissez vos informations? 🙄"
+        android:text="Bienvenue!"
         android:layout_gravity="center"
-        android:layout_margin="16dp"
         android:padding="8dp"
+        android:textSize="20dp"
+        android:textStyle="italic"
+        android:layout_marginEnd="0dp"
+        />
+
+    <TextView
+        android:id="@+id/main_secondephrase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="0dp"
+        android:padding="8dp"
+        android:text="Saisissez vos informations?"
+        android:textSize="20dp"
+        android:textStyle="italic"
         />
 
     <EditText
@@ -27,6 +41,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
         android:hint="Entrer votre nom"
+        android:maxLength="25"
         />
 
     <EditText
@@ -37,6 +52,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:hint="Entrer votre prénom"
+        android:maxLength="25"
         />
 
     <EditText
@@ -46,7 +62,9 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:hint="Entrer votre adresse"
+        android:hint="Entrer votre adresse mail"
+        android:inputType="textEmailAddress"
+        android:maxLength="40"
         />
 
     <EditText
@@ -56,7 +74,9 @@
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:hint="Entrer votre numéro_teléphone"
+        android:hint="Entrer votre numéro de teléphone"
+        android:inputType="phone"
+        android:maxLength="10"
         />
 
     <Button
@@ -104,7 +124,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="110dp"
         android:layout_marginTop="10dp"
-        android:text="Visualiser les User"
+        android:text="Visualiser les Users"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText_message"

@@ -13,16 +13,18 @@
         android:id="@+id/nombreUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bienvenue! Voici les détails de votre compte 😉"
+        android:text="Voici les détails de votre compte 😉"
         android:layout_gravity="center"
         android:layout_margin="16dp"
         android:padding="8dp"
+        android:textSize="20dp"
+        android:textStyle="italic"
         />
 
     <ImageView
         android:id="@+id/imageViewUser"
         android:layout_width="383dp"
-        android:layout_height="125dp"
+        android:layout_height="155dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="21dp"

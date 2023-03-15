@@ -35,14 +35,14 @@ public class VisualisationUserActivity extends AppCompatActivity  {
         this.nombreUser = findViewById(R.id.nombreUser);
         this.listUser = findViewById(R.id.listeUser);
 
-        this.nombreUser.setText("Nombre d'Useurs: " + dbUser.getUserCount() );
+        this.nombreUser.setText("Nombre d'Utilisateurs: " + dbUser.getUserCount() );
 
         List<User> userList = dbUser.getAllUser();
 
         List<String> listeNomPrenom = new ArrayList<String>();
 
         for (User u: userList){
-            listeNomPrenom.add(u.getUserId() +"Nom : " + u.getNom()+  "   Prénom: " +  u.getPrenom());
+            listeNomPrenom.add(u.getUserId() +"\tNom : " + u.getNom()+  "\t\t\t\t\tPrénom: " +  u.getPrenom());
         }
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1 , listeNomPrenom);

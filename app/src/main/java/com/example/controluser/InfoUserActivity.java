@@ -56,9 +56,9 @@ public class InfoUserActivity extends AppCompatActivity {
         //On set les champs
         this.imageViewUser.setImageBitmap(imageUser);
         this.nomUser.setText("Nom Utilisateur : " +user.getNom());
-        this.prenomUser.setText("Prenom Utilisateur : " + user.getPrenom());
+        this.prenomUser.setText("Prénom Utilisateur : " + user.getPrenom());
         this.adresseUser.setText("Adresse Utilisateur : " + user.getAdresse());
-        this.numTelephone.setText("Numero Telephone Utilisateur : " + user.getNumeroTelephone());
+        this.numTelephone.setText("Numéro Téléphone Utilisateur : " + user.getNumeroTelephone());
     }
 
     private Bitmap readImage(String nomFichier) {

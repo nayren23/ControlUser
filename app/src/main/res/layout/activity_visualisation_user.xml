@@ -17,12 +17,15 @@
         android:layout_gravity="center"
         android:layout_margin="16dp"
         android:padding="8dp"
+        android:textSize="30dp"
+        android:textStyle="italic"
         />
 
     <ListView
         android:id="@+id/listeUser"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:textSize="20dp"
         />
 
 </LinearLayout>
